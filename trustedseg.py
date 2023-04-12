@@ -97,7 +97,7 @@ class TMSU(nn.Module):
         :return: evidence of modal data
         """
         # evidence = (input-torch.min(input))/(torch.max(input)-torch.min(input))
-        evidence = F.softmax(input)
+        evidence = nn.softmax(input)
         # evidence[m_num] = torch.exp(torch.clamp(evidence, -10, 10))
         # evidence = F.relu(evidence)
         return evidence
