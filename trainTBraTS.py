@@ -232,7 +232,7 @@ if __name__ == "__main__":
                 print('aver_dice:{} > best_dice:{}'.format(aver_dice, best_dice))
                 best_dice = aver_dice
                 print('===========>save best model!')
-                file_name = os.path.join('/kaggle/working/TBraTS', '_epoch_{}.pth'.format(current_epoch))
+                file_name = os.path.join('/kaggle/working/TBraTSwithoutDirichlet', '_epoch_{}.pth'.format(current_epoch))
                 torch.save({
                     'epoch': current_epoch,
                     'state_dict': model.state_dict(),
@@ -249,7 +249,7 @@ if __name__ == "__main__":
         avg_core_iou = core_iou / len(train_loader)
         avg_enhancing_iou = enhanching_iou / len(train_loader)
         print('===========>save current model!')
-        file_name = os.path.join('/kaggle/working/TBraTS', 'current_epoch.pth')
+        file_name = os.path.join('/kaggle/working/TBraTSwithoutDirichlet', 'current_epoch.pth')
         torch.save({
             'epoch': current_epoch,
             'state_dict': model.state_dict(),
