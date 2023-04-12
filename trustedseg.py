@@ -78,10 +78,12 @@ class TMSU(nn.Module):
                 # backbone_X = F.softmax(backbone_X,dim=1)
 
         # step one
-        evidence = self.infer(backbone_output) # batch_size * class * image_size
+        # evidence = self.infer(backbone_output) # batch_size * class * image_size
+        evidence = backbone_output
 
         # step two
-        alpha = evidence + 1
+        # alpha = evidence + 1
+        alpha = evidence
         if mode == 'train' or mode == 'val':
             loss = dce_eviloss(y.to(torch.int64), alpha, self.classes, global_step, self.lambda_epochs)
             loss = torch.mean(loss)
