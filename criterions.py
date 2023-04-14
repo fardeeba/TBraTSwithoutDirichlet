@@ -325,7 +325,7 @@ def dce_eviloss(p, alpha, c, global_step, annealing_step):
 
     return (L_ace + L_dice + L_KL)
 
-def focal_loss(preds, targets, gamma=2.0, alpha=None):
+def focal_loss(preds, targets, gamma=2.0):
     """Focal loss for binary segmentation.
     
     Args:
