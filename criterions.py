@@ -341,6 +341,7 @@ def focal_loss(preds, targets, gamma=2.0, alpha=0.25):
     C = preds.size(1)
 
     preds = preds.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    alpha = alpha[targets.data.view(-1)]
     targets = targets.view(-1, 1)
 
     log_P = F.log_softmax(preds, dim=1)
@@ -351,7 +352,7 @@ def focal_loss(preds, targets, gamma=2.0, alpha=0.25):
     class_mask = torch.zeros(preds.shape).to(preds.device)  # problem
     class_mask.scatter_(1, targets, 1.)
     # number = torch.unique(targets)
-    alpha = alpha[targets.view(-1)] # problem alpha: weight of data
+     # problem alpha: weight of data
     # alpha = self.alpha.gather(0, targets.view(-1))
 
     probs = (P * class_mask).sum(1).view(-1, 1)  # problem
