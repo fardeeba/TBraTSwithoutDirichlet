@@ -247,6 +247,61 @@ def focal_dce_eviloss(p, alpha, c, global_step, annealing_step):
 
     return (L_ace + L_dice + L_focal + L_KL)
 
+
+def dice_loss(preds, targets, smooth=1.0):
+    """Dice loss for binary segmentation.
+    
+    Args:
+        pred (torch.Tensor): Prediction tensor of shape (N, 1, H, W, D).
+        target (torch.Tensor): Ground truth tensor of shape (N, 1, H, W, D).
+        smooth (float): Smoothing factor to avoid division by zero.
+        
+    Returns:
+        torch.Tensor: Dice loss value.
+    """
+    N = preds.size(0)
+    C = preds.size(1)
+
+    preds = preds.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    if targets.size(1)==4:
+        targets = targets.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    else:
+        targets = targets.view(-1, 1)
+
+    log_P = F.log_softmax(preds, dim=1)
+    P = torch.exp(log_P)
+    # P = F.softmax(preds, dim=1)
+    smooth = torch.zeros(C, dtype=torch.float32).fill_(0.00001)
+
+    class_mask = torch.zeros(preds.shape).to(preds.device) + 1e-8
+    class_mask.scatter_(1, targets, 1.)
+
+    ones = torch.ones(preds.shape).to(preds.device)
+    P_ = ones - P
+    class_mask_ = ones - class_mask
+
+    TP = P * class_mask
+    FP = P * class_mask_
+    FN = P_ * class_mask
+
+    smooth = smooth.to(preds.device)
+    alpha = FP.sum(dim=(0)) / ((FP.sum(dim=(0)) + FN.sum(dim=(0))) + smooth)
+
+    alpha = torch.clamp(alpha, min=0.2, max=0.8)
+    #print('alpha:', self.alpha)
+    beta = 1 - alpha
+    num = torch.sum(TP, dim=(0)).float()
+    den = num + alpha * torch.sum(FP, dim=(0)).float() + beta * torch.sum(FN, dim=(0)).float()
+
+    dice = num / (den + smooth)
+    loss = 1 - dice
+    loss = loss.sum()
+    
+    loss /= C
+    
+    return loss
+
+
 def dce_eviloss(p, alpha, c, global_step, annealing_step):
     criterion_dl = DiceLoss()
     # L_dice =  TDice(alpha,p,criterion_dl)
@@ -270,6 +325,46 @@ def dce_eviloss(p, alpha, c, global_step, annealing_step):
 
     return (L_ace + L_dice + L_KL)
 
+def focal_loss(preds, targets, gamma=2.0, alpha=0.25):
+    """Focal loss for binary segmentation.
+    
+    Args:
+        pred (torch.Tensor): Prediction tensor of shape (N, 1, H, W, D).
+        target (torch.Tensor): Ground truth tensor of shape (N, 1, H, W, D).
+        gamma (float): Focal loss gamma parameter.
+        alpha (float): Focal loss alpha parameter.
+        
+    Returns:
+        torch.Tensor: Focal loss value.
+    """
+    N = preds.size(0)
+    C = preds.size(1)
+
+    preds = preds.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    targets = targets.view(-1, 1)
+
+    log_P = F.log_softmax(preds, dim=1)
+    P = torch.exp(log_P)
+    # P = F.softmax(preds, dim=1)
+    # log_P = F.log_softmax(preds, dim=1)
+    # class_mask = torch.zeros(preds.shape).to(preds.device) + 1e-8
+    class_mask = torch.zeros(preds.shape).to(preds.device)  # problem
+    class_mask.scatter_(1, targets, 1.)
+    # number = torch.unique(targets)
+    alpha = alpha[targets.data.view(-1)] # problem alpha: weight of data
+    # alpha = self.alpha.gather(0, targets.view(-1))
+
+    probs = (P * class_mask).sum(1).view(-1, 1)  # problem
+    log_probs = (log_P * class_mask).sum(1).view(-1, 1)
+
+    # probs = P.gather(1,targets.view(-1,1))   # 这部分实现nll_loss ( crossempty = log_softmax + nll )
+    # log_probs = log_P.gather(1,targets.view(-1,1))
+
+    batch_loss = -alpha * (1-probs).pow(gamma)*log_probs
+
+    loss = batch_loss.mean()
+
+    return loss
 
 def dce_loss(p, alpha, c, global_step, annealing_step):
     criterion_dl = DiceLoss()
