@@ -339,6 +339,7 @@ def focal_loss(preds, targets, gamma=2.0):
     """
     N = preds.size(0)
     C = preds.size(1)
+    alpha = torch.ones(C, 1).cuda()
 
     preds = preds.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
     targets = targets.view(-1, 1)
