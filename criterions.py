@@ -261,6 +261,7 @@ def dice_loss(preds, targets, smooth=1.0):
     """
     N = preds.size(0)
     C = preds.size(1)
+    print("Channels: ",C)
 
     preds = preds.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
     if targets.size(1)==4:
