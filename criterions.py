@@ -267,7 +267,7 @@ def dice_loss(preds, targets, smooth=1.0):
     if targets.size(1)==4:
         targets = targets.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
     else:
-        targets = targets.view(-1, 1)
+        targets = targets.contiguous().view(-1, 1)
 
     log_P = F.log_softmax(preds, dim=1)
     P = torch.exp(log_P)
