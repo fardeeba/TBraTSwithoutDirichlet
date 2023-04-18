@@ -342,7 +342,7 @@ if __name__ == "__main__":
     #tensorboard 
     tboardWriter=SummaryWriter('runs/simpleMultiClassification')
     try:
-        for epoch in range(1, args.epochs + 1):
+        for epoch in range(36, args.epochs + 1):
             start = time.time()
             print('===========Train begining!===========')
             print('Epoch {}/{}'.format(epoch, args.epochs - 1))
