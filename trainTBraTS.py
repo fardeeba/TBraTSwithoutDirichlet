@@ -379,8 +379,8 @@ if __name__ == "__main__":
                 print("Validation losses: ",validation_losses)
             end = time.time()
             print("Time for epoch: ",end-start)
-            tboardWriter.add_scalar("Loss/train", training_losses[epoch-1], epoch-1)
-            tboardWriter.add_scalar("Loss/val", validation_losses[epoch-1], epoch-1)
+            tboardWriter.add_scalar("Loss/train", training_losses[epoch-36], epoch-36)
+            tboardWriter.add_scalar("Loss/val", validation_losses[epoch-36], epoch-36)
     except KeyboardInterrupt:
         plt.plot(training_losses, label='Training loss')
         plt.plot(validation_losses, label='Validation loss')
