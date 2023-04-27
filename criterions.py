@@ -505,7 +505,7 @@ class FocalLoss(nn.Module):
         C = preds.size(1)
 
         preds = preds.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
-        targets = targets.view(-1, 1)
+        targets = targets.contiguous().view(-1, 1)
 
         log_P = F.log_softmax(preds, dim=1)
         P = torch.exp(log_P)
