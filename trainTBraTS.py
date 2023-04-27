@@ -106,16 +106,16 @@ if __name__ == "__main__":
     print('Samples for test = {}'.format(len(test_set)))
 
     model = TMSU(args.classes, args.modes, args.model_name, args.input_dims,args.epochs, args.lambda_epochs) # lambda KL divergence
-    # Define the path to the saved file
-    saved_file_path = '/kaggle/input/model-state-saved/current_epoch.pth'
+    # # Define the path to the saved file
+    # saved_file_path = '/kaggle/input/model-state-saved/current_epoch.pth'
 
-    # Load the saved file into memory
-    saved_data = torch.load(saved_file_path)
+    # # Load the saved file into memory
+    # saved_data = torch.load(saved_file_path)
 
-    # Extract the desired state_dict by its key
-    state_dict_key = 'state_dict'
-    model_state_dict = saved_data[state_dict_key]
-    model.load_state_dict(model_state_dict)
+    # # Extract the desired state_dict by its key
+    # state_dict_key = 'state_dict'
+    # model_state_dict = saved_data[state_dict_key]
+    # model.load_state_dict(model_state_dict)
     total = sum([param.nelement() for param in model.parameters()])
     print("Number of model's parameter: %.2fM" % (total / 1e6))
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-5)
@@ -342,7 +342,7 @@ if __name__ == "__main__":
     #tensorboard 
     tboardWriter=SummaryWriter('runs/simpleMultiClassification')
     try:
-        for epoch in range(91, args.epochs + 1):
+        for epoch in range(1, args.epochs + 1):
             start = time.time()
             print('===========Train begining!===========')
             print('Epoch {}/{}'.format(epoch, args.epochs - 1))
@@ -379,8 +379,8 @@ if __name__ == "__main__":
                 print("Validation losses: ",validation_losses)
             end = time.time()
             print("Time for epoch: ",end-start)
-            tboardWriter.add_scalar("Loss/train", training_losses[epoch-91], epoch-91)
-            tboardWriter.add_scalar("Loss/val", validation_losses[epoch-91], epoch-91)
+            tboardWriter.add_scalar("Loss/train", training_losses[epoch-1], epoch-1)
+            tboardWriter.add_scalar("Loss/val", validation_losses[epoch-1], epoch-1)
     except KeyboardInterrupt:
         plt.plot(training_losses, label='Training loss')
         plt.plot(validation_losses, label='Validation loss')
