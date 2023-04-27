@@ -4,7 +4,7 @@ import os
 import torch.nn as nn
 import time
 import torch.nn.functional as F
-from criterions import softmaxBCE_dice,KL,ce_loss,mse_loss,dce_eviloss,dice_loss,focal_loss,softmax_dice
+from criterions import softmaxBCE_dice,KL,ce_loss,mse_loss,dce_eviloss,dice_loss,focal_loss,softmax_dice, DiceLoss, FocalLoss,TDice,TFocal
 from predict import tailor_and_concat
 from VNet3D import VNet
 from UNet3DZoo import Unet,AttUnet
@@ -88,7 +88,9 @@ class TMSU(nn.Module):
             # loss = dce_eviloss(y.to(torch.int64), alpha, self.classes, global_step, self.lambda_epochs)
             # loss = torch.mean(loss)
             # loss = dice_loss(evidence,y.to(torch.int64)) + (1*focal_loss(evidence,y.to(torch.int64)))
-            loss = softmax_dice(evidence,y.to(torch.int64))
+            criterion_dl = DiceLoss()
+            criterion_fl = FocalLoss(4)
+            loss = TDice(evidence,y.to(torch.int64),criterion_dl) + (1*TFocal(evidence,y.to(torch.int64)),criterion_fl)
             return evidence, loss
         else:
             return evidence
