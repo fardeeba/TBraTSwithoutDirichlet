@@ -87,7 +87,8 @@ class TMSU(nn.Module):
         if mode == 'train' or mode == 'val':
             # loss = dce_eviloss(y.to(torch.int64), alpha, self.classes, global_step, self.lambda_epochs)
             # loss = torch.mean(loss)
-            loss = dice_loss(evidence,y.to(torch.int64)) + (1*focal_loss(evidence,y.to(torch.int64)))
+            # loss = dice_loss(evidence,y.to(torch.int64)) + (1*focal_loss(evidence,y.to(torch.int64)))
+            loss = softmax_dice(evidence,y.to(torch.int64))
             return evidence, loss
         else:
             return evidence
