@@ -83,14 +83,12 @@ class TMSU(nn.Module):
 
         # step two
         # alpha = evidence + 1
-        alpha = evidence
+        # alpha = evidence
         if mode == 'train' or mode == 'val':
             # loss = dce_eviloss(y.to(torch.int64), alpha, self.classes, global_step, self.lambda_epochs)
             # loss = torch.mean(loss)
             # loss = dice_loss(evidence,y.to(torch.int64)) + (1*focal_loss(evidence,y.to(torch.int64)))
-            criterion_dl = DiceLoss()
-            criterion_fl = FocalLoss(4)
-            loss = TDice(evidence,y.to(torch.int64),criterion_dl) + (1*TFocal(evidence,y.to(torch.int64),criterion_fl))
+            loss = dice_loss(evidence,y.to(torch.int64))
             return evidence, loss
         else:
             return evidence
