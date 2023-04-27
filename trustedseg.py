@@ -90,7 +90,7 @@ class TMSU(nn.Module):
             # loss = dice_loss(evidence,y.to(torch.int64)) + (1*focal_loss(evidence,y.to(torch.int64)))
             criterion_dl = DiceLoss()
             criterion_fl = FocalLoss(4)
-            loss = TDice(evidence,y.to(torch.int64),criterion_dl) + (1*TFocal(evidence,y.to(torch.int64)),criterion_fl)
+            loss = TDice(evidence,y.to(torch.int64),criterion_dl) + (1*TFocal(evidence,y.to(torch.int64),criterion_fl))
             return evidence, loss
         else:
             return evidence
