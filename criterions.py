@@ -40,22 +40,8 @@ def flatten(tensor):
     # Flatten: (C, N, D, H, W) -> (C, N * D * H * W)
     return transposed.reshape(C, -1)
 
-def DscLoss(y_pred, y_true, smooth=1.0):
-    y_pred = y_pred[:, 0].contiguous().view(-1)
-    y_true = y_true[:, 0].contiguous().view(-1)
-    intersection = (y_pred * y_true).sum()
-    dsc = (2. * intersection + smooth) / (
-        y_pred.sum() + y_true.sum() + smooth
-    )
-    return 1. - dsc
-
 def Dice(output, target, eps=1e-5):
-    C = output.size(1)
-    output = output.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
-    if target.size(1)==4:
-        target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
-    else:
-        target = target.contiguous().view(-1, 1)
+    target = target.float()
     num = 2 * (output * target).sum()
     den = output.sum() + target.sum() + eps
     return 1.0 - num/den
