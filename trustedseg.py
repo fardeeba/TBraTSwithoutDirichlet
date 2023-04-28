@@ -4,7 +4,7 @@ import os
 import torch.nn as nn
 import time
 import torch.nn.functional as F
-from criterions import softmaxBCE_dice,KL,ce_loss,mse_loss,dce_eviloss,dice_loss,focal_loss,softmax_dice, DiceLoss, FocalLoss,TDice,TFocal,Dice,DscLoss
+from criterions import softmaxBCE_dice,KL,ce_loss,mse_loss,dce_eviloss,dice_loss,focal_loss,softmax_dice
 from predict import tailor_and_concat
 from VNet3D import VNet
 from UNet3DZoo import Unet,AttUnet
