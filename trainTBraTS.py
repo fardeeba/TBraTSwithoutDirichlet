@@ -161,14 +161,14 @@ if __name__ == "__main__":
             iou_total += iou_res[1]
             # loss & noised loss
             
-            print("%d/%d,train_loss:%0.3f" % (step, (dt_size - 1) // train_loader.batch_size + 1, loss.item()))
+            print("%d/%d,train_loss:%0.3f" % (step, (dt_size - 1) // train_loader.batch_size + 1, loss))
             print('current_iou:{} ; current_dice:{}'.format(iou_res, dice_res))
 
             optimizer.zero_grad()
             loss.requires_grad_(True).backward()
             optimizer.step()
 
-            loss_meter.update(loss.item())
+            loss_meter.update(loss)
         aver_dice = dice_total / len(train_loader)
         aver_iou = iou_total / len(train_loader)
         avg_whole_dice = whole_dice / len(train_loader)
@@ -222,7 +222,7 @@ if __name__ == "__main__":
                 dice_total += dice_res[1]
                 iou_total += iou_res[1]
                 # loss & noised loss
-                loss_meter.update(loss.item())
+                loss_meter.update(loss)
         aver_dice = dice_total / len(valid_loader)
         aver_iou = iou_total / len(valid_loader)
         if aver_dice > best_dice \
@@ -326,8 +326,8 @@ if __name__ == "__main__":
                 noised_iou_total += noised_iou_res[1]
                 print('current_dice:{} ; current_noised_dice:{}'.format(dice_res, noised_dice_res))
                 # loss & noised loss
-                loss_meter.update(loss.item())
-                # noised_loss_meter.update(noised_loss.item())
+                loss_meter.update(loss)
+                # noised_loss_meter.update(noised_loss)
         # noised_aver_dice = noised_dice_total / len(test_loader)
         aver_dice = dice_total / len(test_loader)
         # print('====> noised_aver_dice: {:.4f}'.format(noised_aver_dice))
