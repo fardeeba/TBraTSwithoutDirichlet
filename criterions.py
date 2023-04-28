@@ -41,7 +41,11 @@ def flatten(tensor):
     return transposed.reshape(C, -1)
 
 def Dice(output, target, eps=1e-5):
-    target = target.float()
+    output = output.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    if target.size(1)==4:
+        target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    else:
+        target = target.contiguous().view(-1, 1)
     num = 2 * (output * target).sum()
     den = output.sum() + target.sum() + eps
     return 1.0 - num/den
