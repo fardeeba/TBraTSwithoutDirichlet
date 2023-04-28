@@ -366,8 +366,8 @@ if __name__ == "__main__":
             print("epoch %d avg_whole_tumor_iou_score:%0.3f" % (epoch, avg_whole_iou))
             print("epoch %d avg_tumor_core_iou_score:%0.3f" % (epoch, avg_core_iou))
             print("epoch %d avg_enhancing_tumor_iou_score:%0.3f" % (epoch, avg_enhancing_iou))
-            training_losses.append(epoch_loss.cpu())
-            validation_losses.append(val_loss.cpu())
+            training_losses.append(epoch_loss.detach().cpu().numpy())
+            validation_losses.append(val_loss.detach().cpu().numpy())
             if epoch % 5 == 0:
                 plt.plot(training_losses, label='Training loss')
                 plt.plot(validation_losses, label='Validation loss')
