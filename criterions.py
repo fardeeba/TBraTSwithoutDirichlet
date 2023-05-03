@@ -306,9 +306,14 @@ def dice_loss(preds, targets, smooth=1.0):
 def categorical_dice_loss(output, target, num_classes=3, smooth=1):
     num_classes = output.shape[1]
     dice = 0
+    output = output.permute(0, 2, 3, 4, 1).contiguous().view(-1, num_classes)
+    if target.size(1)==4:
+        target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, num_classes)
+    else:
+        target = target.contiguous().view(-1, 1)
     for i in range(num_classes):
-        p = output[:,i,:,:].contiguous().view(-1, 1)
-        t = target[:,i,:,:].contiguous().view(-1, 1)
+        p = output[:,i,:,:]
+        t = target[:,i,:,:]
         intersection = (p * t).sum()
         dice_i = (2. * intersection + smooth) / (p.sum() + t.sum() + smooth)
         dice += dice_i
