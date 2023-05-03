@@ -312,8 +312,8 @@ def categorical_dice_loss(output, target, eps= 1e-5):
     #     target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
     # else:
     #     target = target.contiguous().view(-1, 1)
-    intersection = (output * target).view(output.shape[0], -1).sum(axis= -1)
-    union = output.view(output.shape[0], -1).sum(axis= -1) + target.view(target.shape[0], -1).sum(axis= -1)
+    intersection = (output * target).view(output.shape[1], -1).sum(axis= -1)
+    union = output.view(output.shape[1], -1).sum(axis= -1) + target.view(target.shape[1], -1).sum(axis= -1)
     return (1 - 2*intersection/(union + eps) ).sum()
 
 
