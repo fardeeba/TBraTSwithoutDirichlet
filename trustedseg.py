@@ -42,6 +42,7 @@ class TMSU(nn.Module):
         self.eps = 1e-10
         self.lambda_epochs = lambda_epochs
         self.total_epochs = total_epochs+1
+        self.softmax = nn.LogSoftmax(dim=1)
         # self.Classifiers = nn.ModuleList([Classifier(classifier_dims[i], self.classes) for i in range(self.modes)])
 
     def forward(self, X, y, global_step, mode, use_TTA=False):
@@ -78,7 +79,7 @@ class TMSU(nn.Module):
                 # backbone_X = F.softmax(backbone_X,dim=1)
 
         # step one
-        evidence = self.infer(backbone_output) # batch_size * class * image_size
+        evidence = self.softmax(backbone_output) # batch_size * class * image_size
         
 
         # step two
@@ -99,7 +100,7 @@ class TMSU(nn.Module):
         :return: evidence of modal data
         """
         # evidence = (input-torch.min(input))/(torch.max(input)-torch.min(input))
-        evidence = F.softmax(input,dim=1)
+        evidence = nn.LogSoftmax(input,dim=1)
         # evidence[m_num] = torch.exp(torch.clamp(evidence, -10, 10))
         # evidence = F.relu(evidence)
         return evidence
