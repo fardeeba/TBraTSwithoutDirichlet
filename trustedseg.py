@@ -90,7 +90,7 @@ class TMSU(nn.Module):
             # loss = torch.mean(loss)
             # loss = dice_loss(evidence,y.to(torch.int64)) + (1*focal_loss(evidence,y.to(torch.int64)))
             loss,_,_,_ = softmax_dice(evidence,y.to(torch.int64))
-            return evidence, loss
+            return evidence, (1-loss)
         else:
             return evidence
 
