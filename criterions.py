@@ -311,13 +311,15 @@ def categorical_dice_loss(output, target, num_classes=3, smooth=1):
         target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, num_classes)
     else:
         target = target.contiguous().view(-1, 1)
-    for i in range(num_classes):
-        p = output[:,i,:,:]
-        t = target[:,i,:,:]
-        intersection = (p * t).sum()
-        dice_i = (2. * intersection + smooth) / (p.sum() + t.sum() + smooth)
-        dice += dice_i
-    return 1 - dice / num_classes
+    # Flatten tensors to have shape (batch_size, num_pixels)
+    # output_flat = output.view(output.size(0), -1)
+    # target_flat = target.view(target.size(0), -1)
+    intersection = output * target
+    # Sum over pixels and divide by number of pixels to get mean intersection
+    intersection = intersection.sum(1) / (target.sum(1) + smooth)
+    dice = (2.0 * intersection) / (2.0 * intersection + 1.0 - intersection + smooth)
+    # Return average dice loss over batch
+    return 1 - dice.mean()
 
 
 def dce_eviloss(p, alpha, c, global_step, annealing_step):
