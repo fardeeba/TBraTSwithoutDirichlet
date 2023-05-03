@@ -307,8 +307,8 @@ def categorical_dice_loss(output, target, num_classes=3, smooth=1):
     num_classes = output.shape[1]
     dice = 0
     for i in range(num_classes):
-        p = output[:,i,:,:,:]
-        t = target[:,i,:,:,:]
+        p = output[:,i,:,:]
+        t = target[:,i,:,:]
         intersection = (p * t).sum()
         dice_i = (2. * intersection + smooth) / (p.sum() + t.sum() + smooth)
         dice += dice_i
