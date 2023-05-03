@@ -303,7 +303,7 @@ def dice_loss(preds, targets, smooth=1.0):
     return loss
 
 
-def categorical_dice_loss(output, target, eps= 1e-5):
+def categorical_dice_loss(output, target, eps= 1, alpha= .5, beta= .5):
     # assert output.size() == target.size()
     C = output.size(1)
 
@@ -312,9 +312,12 @@ def categorical_dice_loss(output, target, eps= 1e-5):
         target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
     else:
         target = target.contiguous().view(-1, 1)
-    intersection = (output * target).sum()
-    union = output.sum(axis= -1) + target.sum()
-    return (1 - 2*intersection/(union + eps) ).sum()
+    true_pos = (output * target).sum()    
+    false_pos = ( (1-target) * output).sum()
+    false_neg = (target * (1-output) ).sum()
+    tversky_coef = (true_pos + eps) / (true_pos + alpha*false_pos + beta*false_neg + eps)  
+
+    return 1 - tversky_coef
 
 
 def dce_eviloss(p, alpha, c, global_step, annealing_step):
