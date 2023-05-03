@@ -304,16 +304,15 @@ def dice_loss(preds, targets, smooth=1.0):
 
 
 def categorical_dice_loss(output, target, num_classes=3, smooth=1):
-    output = torch.sigmoid(output)
-    # Flatten tensors to have shape (batch_size, num_classes, num_pixels)
-    output_flat = output.view(output.size(0), num_classes, -1)
-    target_flat = target.view(target.size(0), num_classes, -1)
-    intersection = output_flat * target_flat
-    # Sum over pixels and divide by number of pixels to get mean intersection
-    intersection = intersection.sum(2) / (target_flat.sum(2) + smooth)
-    dice = (2.0 * intersection) / (2.0 * intersection + 1.0 - intersection + smooth)
-    # Return average dice loss over batch and classes
-    return 1 - dice.mean(dim=0).mean()
+    num_classes = output.shape[1]
+    dice = 0
+    for i in range(num_classes):
+        p = output[:,i,:,:,:]
+        t = target[:,i,:,:,:]
+        intersection = (p * t).sum()
+        dice_i = (2. * intersection + smooth) / (p.sum() + t.sum() + smooth)
+        dice += dice_i
+    return 1 - dice / num_classes
 
 
 def dce_eviloss(p, alpha, c, global_step, annealing_step):
