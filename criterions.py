@@ -303,22 +303,18 @@ def dice_loss(preds, targets, smooth=1.0):
     return loss
 
 
-def categorical_dice_loss(output, target, num_classes=3, smooth=1):
+def categorical_dice_loss(output, target, eps= 1e-5):
     # assert output.size() == target.size()
-    # C = output.size(1)
+    C = output.size(1)
 
-    # output = output.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
-    # if target.size(1)==4:
-    #     target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
-    # else:
-    #     target = target.contiguous().view(-1, 1)
-    output = output[:, 0].contiguous().view(-1)
-    target = target[:, 0].contiguous().view(-1)
-    intersection = (output * target).sum()
-    dsc = (2. * intersection + smooth) / (
-        output.sum() + target.sum() + smooth
-    )
-    return 1. - dsc
+    output = output.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    if target.size(1)==4:
+        target = target.permute(0, 2, 3, 4, 1).contiguous().view(-1, C)
+    else:
+        target = target.contiguous().view(-1, 1)
+    intersection = (input * target).view(input.shape[0], -1).sum(axis= -1)
+    union = input.view(input.shape[0], -1).sum(axis= -1) + target.view(target.shape[0], -1).sum(axis= -1)
+    return (1 - 2*intersection/(union + eps) ).sum()
 
 
 def dce_eviloss(p, alpha, c, global_step, annealing_step):
