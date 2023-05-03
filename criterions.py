@@ -303,29 +303,41 @@ def dice_loss(preds, targets, smooth=1.0):
     return loss
 
 
+def categorical_dice_loss(output, target, num_classes=3, smooth=1):
+    output = torch.sigmoid(output)
+    # Flatten tensors to have shape (batch_size, num_classes, num_pixels)
+    output_flat = output.view(output.size(0), num_classes, -1)
+    target_flat = target.view(target.size(0), num_classes, -1)
+    intersection = output_flat * target_flat
+    # Sum over pixels and divide by number of pixels to get mean intersection
+    intersection = intersection.sum(2) / (target_flat.sum(2) + smooth)
+    dice = (2.0 * intersection) / (2.0 * intersection + 1.0 - intersection + smooth)
+    # Return average dice loss over batch and classes
+    return 1 - dice.mean(dim=0).mean()
+
+
 def dce_eviloss(p, alpha, c, global_step, annealing_step):
     criterion_dl = DiceLoss()
     # L_dice =  TDice(alpha,p,criterion_dl)
     L_dice,_,_,_ = softmax_dice(alpha, p)
-    # alpha = alpha.view(alpha.size(0), alpha.size(1), -1)  # [N, C, HW]
-    # alpha = alpha.transpose(1, 2)  # [N, HW, C]
-    # alpha = alpha.contiguous().view(-1, alpha.size(2))
-    # S = torch.sum(alpha, dim=1, keepdim=True)
-    # E = alpha - 1
-    # label = F.one_hot(p, num_classes=c)
-    # label = label.view(-1, c)
-    # # digama loss
-    # L_ace = torch.sum(label * (torch.digamma(S) - torch.digamma(alpha)), dim=1, keepdim=True)
-    # # log loss
-    # # labelK = label * (torch.log(S) -  torch.log(alpha))
-    # # L_ace = torch.sum(label * (torch.log(S) -  torch.log(alpha)), dim=1, keepdim=True)
+    alpha = alpha.view(alpha.size(0), alpha.size(1), -1)  # [N, C, HW]
+    alpha = alpha.transpose(1, 2)  # [N, HW, C]
+    alpha = alpha.contiguous().view(-1, alpha.size(2))
+    S = torch.sum(alpha, dim=1, keepdim=True)
+    E = alpha - 1
+    label = F.one_hot(p, num_classes=c)
+    label = label.view(-1, c)
+    # digama loss
+    L_ace = torch.sum(label * (torch.digamma(S) - torch.digamma(alpha)), dim=1, keepdim=True)
+    # log loss
+    # labelK = label * (torch.log(S) -  torch.log(alpha))
+    # L_ace = torch.sum(label * (torch.log(S) -  torch.log(alpha)), dim=1, keepdim=True)
 
-    # annealing_coef = min(1, global_step / annealing_step)
-    # alp = E * (1 - label) + 1
-    # L_KL = annealing_coef * KL(alp, c)
+    annealing_coef = min(1, global_step / annealing_step)
+    alp = E * (1 - label) + 1
+    L_KL = annealing_coef * KL(alp, c)
 
-    # return (L_ace + L_dice + L_KL)
-    return L_dice
+    return (L_ace + L_dice + L_KL)
 
 def focal_loss(preds, targets, gamma=2.0):
     """Focal loss for binary segmentation.
