@@ -307,24 +307,25 @@ def dce_eviloss(p, alpha, c, global_step, annealing_step):
     criterion_dl = DiceLoss()
     # L_dice =  TDice(alpha,p,criterion_dl)
     L_dice,_,_,_ = softmax_dice(alpha, p)
-    alpha = alpha.view(alpha.size(0), alpha.size(1), -1)  # [N, C, HW]
-    alpha = alpha.transpose(1, 2)  # [N, HW, C]
-    alpha = alpha.contiguous().view(-1, alpha.size(2))
-    S = torch.sum(alpha, dim=1, keepdim=True)
-    E = alpha - 1
-    label = F.one_hot(p, num_classes=c)
-    label = label.view(-1, c)
-    # digama loss
-    L_ace = torch.sum(label * (torch.digamma(S) - torch.digamma(alpha)), dim=1, keepdim=True)
-    # log loss
-    # labelK = label * (torch.log(S) -  torch.log(alpha))
-    # L_ace = torch.sum(label * (torch.log(S) -  torch.log(alpha)), dim=1, keepdim=True)
+    # alpha = alpha.view(alpha.size(0), alpha.size(1), -1)  # [N, C, HW]
+    # alpha = alpha.transpose(1, 2)  # [N, HW, C]
+    # alpha = alpha.contiguous().view(-1, alpha.size(2))
+    # S = torch.sum(alpha, dim=1, keepdim=True)
+    # E = alpha - 1
+    # label = F.one_hot(p, num_classes=c)
+    # label = label.view(-1, c)
+    # # digama loss
+    # L_ace = torch.sum(label * (torch.digamma(S) - torch.digamma(alpha)), dim=1, keepdim=True)
+    # # log loss
+    # # labelK = label * (torch.log(S) -  torch.log(alpha))
+    # # L_ace = torch.sum(label * (torch.log(S) -  torch.log(alpha)), dim=1, keepdim=True)
 
-    annealing_coef = min(1, global_step / annealing_step)
-    alp = E * (1 - label) + 1
-    L_KL = annealing_coef * KL(alp, c)
+    # annealing_coef = min(1, global_step / annealing_step)
+    # alp = E * (1 - label) + 1
+    # L_KL = annealing_coef * KL(alp, c)
 
-    return (L_ace + L_dice + L_KL)
+    # return (L_ace + L_dice + L_KL)
+    return L_dice
 
 def focal_loss(preds, targets, gamma=2.0):
     """Focal loss for binary segmentation.
