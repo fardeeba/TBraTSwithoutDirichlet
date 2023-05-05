@@ -106,16 +106,16 @@ if __name__ == "__main__":
     print('Samples for test = {}'.format(len(test_set)))
 
     model = TMSU(args.classes, args.modes, args.model_name, args.input_dims,args.epochs, args.lambda_epochs) # lambda KL divergence
-    # # Define the path to the saved file
-    # saved_file_path = '/kaggle/input/model-state-saved/current_epoch.pth'
+    # Define the path to the saved file
+    saved_file_path = '/kaggle/input/model-state-saved/current_epoch.pth'
 
-    # # Load the saved file into memory
-    # saved_data = torch.load(saved_file_path)
+    # Load the saved file into memory
+    saved_data = torch.load(saved_file_path)
 
-    # # Extract the desired state_dict by its key
-    # state_dict_key = 'state_dict'
-    # model_state_dict = saved_data[state_dict_key]
-    # model.load_state_dict(model_state_dict)
+    # Extract the desired state_dict by its key
+    state_dict_key = 'state_dict'
+    model_state_dict = saved_data[state_dict_key]
+    model.load_state_dict(model_state_dict)
     total = sum([param.nelement() for param in model.parameters()])
     print("Number of model's parameter: %.2fM" % (total / 1e6))
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-5)
