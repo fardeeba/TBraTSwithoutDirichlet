@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     model = TMSU(args.classes, args.modes, args.model_name, args.input_dims,args.epochs, args.lambda_epochs) # lambda KL divergence
     # Define the path to the saved file
-    saved_file_path = '/kaggle/input/model-state-saved/current_epoch.pth'
+    saved_file_path = '/kaggle/input/d/cmmfalcon/model-state-saved/current_epoch.pth'
 
     # Load the saved file into memory
     saved_data = torch.load(saved_file_path)
