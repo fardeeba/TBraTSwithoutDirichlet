@@ -342,7 +342,7 @@ if __name__ == "__main__":
     #tensorboard 
     tboardWriter=SummaryWriter('runs/simpleMultiClassification')
     try:
-        for epoch in range(46, args.epochs + 1):
+        for epoch in range(101, args.epochs + 1):
             start = time.time()
             print('===========Train begining!===========')
             print('Epoch {}/{}'.format(epoch, args.epochs - 1))
@@ -379,8 +379,8 @@ if __name__ == "__main__":
                 print("Validation losses: ",validation_losses)
             end = time.time()
             print("Time for epoch: ",end-start)
-            tboardWriter.add_scalar("Loss/train", training_losses[epoch-46], epoch-46)
-            tboardWriter.add_scalar("Loss/val", validation_losses[epoch-46], epoch-46)
+            tboardWriter.add_scalar("Loss/train", training_losses[epoch-101], epoch-101)
+            tboardWriter.add_scalar("Loss/val", validation_losses[epoch-101], epoch-101)
     except KeyboardInterrupt:
         plt.plot(training_losses, label='Training loss')
         plt.plot(validation_losses, label='Validation loss')
